@@ -1,8 +1,12 @@
 {
-    "fun_aq": null,
+    "fun_aq": "fun_globalprot",
     "dependencias": [
+         {
+            "key": "flfacturac",
+            "version": "v1.0"
+        },
         {
-            "key": "baseparche",
+            "key": "flsyncppal",
             "version": "v1.0"
         }
     ],
