@@ -1,0 +1,24 @@
+{
+    "modifications": {
+        "patchScript": [],
+        "deleteFile": [],
+        "replaceFile": [
+            {
+                "name": "dependencias.json",
+                "path": "config/"
+            }
+        ],
+        "patchJson": [
+            {
+                "name": "urls.json",
+                "path": "config/"
+            },
+            {
+                "name": "registros.json",
+                "path": "config/"
+            }
+        ],
+        "addFile": []
+    },
+    "name": "globalprot_sync"
+}
