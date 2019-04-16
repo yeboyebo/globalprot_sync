@@ -1,6 +1,15 @@
 {
     "modifications": {
-        "patchScript": [],
+        "patchScript": [
+            {
+                "name": "model_flfactppal__empresa.py",
+                "path": "models/flfactppal/"
+            },
+            {
+                "name": "model_flfactppal__empresa_def.py",
+                "path": "models/flfactppal/"
+            }
+        ],
         "deleteFile": [],
         "replaceFile": [
             {
@@ -18,7 +27,16 @@
                 "path": "config/"
             }
         ],
-        "addFile": []
+        "addFile": [
+            {
+                "name": "app_sync__tasks.py",
+                "path": "apps/sync/"
+            },
+            {
+                "name": "controller_api_products__upload.py",
+                "path": "controllers/api/sync/products/"
+            }
+        ]
     },
     "name": "globalprot_sync"
 }
