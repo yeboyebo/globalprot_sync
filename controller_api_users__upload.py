@@ -18,7 +18,7 @@ class globalprot_sync_upload(interna_upload):
         result = None
         status = None
 
-        response = task_manager.task_executer("products_upload", data)
+        response = task_manager.task_executer("users_upload", data)
         result = response["data"]
         status = response["status"]
 

@@ -15,6 +15,10 @@
             {
                 "name": "dependencias.json",
                 "path": "config/"
+            },
+            {
+                "name": "settings.py",
+                "path": "AQNEXT/"
             }
         ],
         "patchJson": [
@@ -35,6 +39,90 @@
             {
                 "name": "controller_api_products__upload.py",
                 "path": "controllers/api/sync/products/"
+            },
+            {
+                "name": "controller_api_products__products_upload.py",
+                "path": "controllers/api/sync/products/controllers/"
+            },
+            {
+                "path": "controllers/api/",
+                "name": "controller_api____init__.py"
+            },
+            {
+                "path": "controllers/api/sync/users/",
+                "name": "controller_api_users__upload.py"
+            },
+            {
+                "path": "controllers/api/sync/users/controllers/",
+                "name": "controller_api_users__users_upload.py"
+            },
+            {
+                "name": "model_flfactppal__gp_usutiendaonline.py",
+                "path": "models/flfactppal/"
+            },
+            {
+                "name": "model_flfactppal__gp_usutiendaonline_def.py",
+                "path": "models/flfactppal/"
+            },
+            {
+                "path": "models/flfactalma/",
+                "name": "model_flfactalma__atributosarticulos.py"
+            },
+            {
+                "path": "models/flfactalma/",
+                "name": "model_flfactalma__atributosarticulos_def.py"
+            },
+            {
+                "path": "models/flfactalma/",
+                "name": "model_flfactalma__sincro_catalogo.py"
+            },
+            {
+                "path": "models/flfactalma/",
+                "name": "model_flfactalma__sincro_catalogo_def.py"
+            },
+            {
+                "path": "models/flfactalma/",
+                "name": "model_flfactalma__lineassincro_catalogo.py"
+            },
+            {
+                "path": "models/flfactalma/",
+                "name": "model_flfactalma__lineassincro_catalogo_def.py"
+            },
+            {
+                "name": "controller_api_orders__download.py",
+                "path": "controllers/api/sync/orders/"
+            },
+            {
+                "name": "controller_api_orders__gporder_serializer.py",
+                "path": "controllers/api/sync/orders/serializers/"
+            },
+            {
+                "name": "controller_api_orders__gporder_line_serializer.py",
+                "path": "controllers/api/sync/orders/serializers/"
+            },
+            {
+                "name": "controller_api_orders__gporders_download.py",
+                "path": "controllers/api/sync/orders/controllers/"
+            },
+            {
+                "name": "controller_api_products__info.py",
+                "path": "controllers/api/sync/products/"
+            },
+            {
+                "name": "model_flfacturac__gporder_line_raw.py",
+                "path": "models/flfacturac/objects/"
+            },
+            {
+                "name": "model_flfacturac__gporder_raw.py",
+                "path": "models/flfacturac/objects/"
+            },
+            {
+                "name": "model_flfactalma__movistock.py",
+                "path": "models/flfactalma/"
+            },
+            {
+                "name": "model_flfactalma__movistock_def.py",
+                "path": "models/flfactalma/"
             }
         ]
     },

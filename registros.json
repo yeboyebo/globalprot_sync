@@ -1,3 +1,39 @@
 {
-    "modifications": []
+    "modifications": [
+        {
+            "type": "insertAfterNode",
+            "path": "/flfactalma/stocks",
+            "value": {
+                "atributosarticulos": null
+            }
+        },
+        {
+            "type": "insertAfterNode",
+            "path": "/flfactalma/atributosarticulos",
+            "value": {
+                "sincro_catalogo": null
+            }
+        },
+        {
+            "type": "insertAfterNode",
+            "path": "/flfactalma/sincro_catalogo",
+            "value": {
+                "lineassincro_catalogo": null
+            }
+        },
+        {
+            "type": "insertAfterNode",
+            "path": "/flfactalma/lineassincro_catalogo",
+            "value": {
+                "movistock": null
+            }
+        },
+        {
+            "type": "insertAfterNode",
+            "path": "/flfactppal/usuarios",
+            "value": {
+                "gp_usutiendaonline": null
+            }
+        }
+    ]
 }

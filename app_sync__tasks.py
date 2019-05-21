@@ -1,25 +1,23 @@
-from controllers.api.sync.base.task_manager import TaskManager
+from controllers.api.sync.base.controllers.task_manager import TaskManager
+from controllers.api.sync.products.controllers.products_upload import GpProductsUpload
+from controllers.api.sync.users.controllers.users_upload import GpUsersUpload
+from controllers.api.sync.orders.controllers.gporders_download import GpOrdersDownload
 from controllers.api.sync.base.drivers.drupal_driver import DrupalDriver
-from controllers.api.sync.products.upload import GpProductsUpload
 
 
 sync_object_dict = {
     "products_upload": {
         "sync_object": GpProductsUpload,
         "driver": DrupalDriver
+    },
+    "users_upload": {
+        "sync_object": GpUsersUpload,
+        "driver": DrupalDriver
+    },
+    "orders_download": {
+        "sync_object": GpOrdersDownload,
+        "driver": DrupalDriver
     }
 }
 
 task_manager = TaskManager(sync_object_dict)
-
-
-def getActivity():
-    return task_manager.get_activity()
-
-
-def revoke(id):
-    return task_manager.revoke(id)
-
-
-def products_upload(request, params={}):
-    task_manager.task_executer(request, "products_upload", params)
