@@ -25,14 +25,11 @@ class GpUsersUpload(AQSyncUpload):
         })
 
     def get_data(self):
-        print("CodSincro: ", self.params["codsincro"])
         q = qsatype.FLSqlQuery()
         q.setSelect("id, idobjeto, descripcion, idobjeto_web, tiposincro")
         q.setFrom("lineassincro_catalogo")
         q.setWhere("codsincro = '{}' AND sincronizado = false".format(self.params["codsincro"]))
-
         q.exec_()
-        print("**********************Consulta*******************:", q.sql())
         body = []
         if not q.size():
             return body
@@ -45,7 +42,6 @@ class GpUsersUpload(AQSyncUpload):
             uid = q.value("idobjeto_web")
             # body.append({"idlinea": idlinea, "mail": email, "uid": uid, "tiposincro": tiposincro, "status": "1", "roles": ["4"], "pass": "123456789", "name": nombre})
             body.append({"idlinea": idlinea, "mail": email, "uid": uid, "tiposincro": tiposincro, "status": "1", "roles": ["4"], "name": nombre})
-        print("get-data_body: ", body)
         return body
 
     def sync(self):
@@ -57,22 +53,14 @@ class GpUsersUpload(AQSyncUpload):
 
         for item in data:
             user_id = item["uid"]
-            print("item['uid']:", user_id)
             tiposincro = item["tiposincro"]
-            print("tiposincro: ", tiposincro)
             if user_id and user_id is not None and user_id != "":
                 if tiposincro == "Borrar Usuario":
-                    print("*************Llamada DELETE Usuario *******************")
                     response_data = self.elimina_usuario(item)
                 else:
-                    print("*************Llamada MODIFICAR Usuario *******************")
-                    print("item_______:", item)
                     response_data = self.modifica_usuario(item)
             else:
-                    print("*************Llamada ALTA Usuario *******************")
                     response_data = self.crea_usuario(item)
-
-            print("Datos de respuesta: ", response_data)
 
         return self.after_sync()
 
@@ -91,7 +79,6 @@ class GpUsersUpload(AQSyncUpload):
         }
 
         response_data = self.send_request("post", data=json.dumps(data), replace=[""])
-        print("uid________: ", response_data["uid"])
         qsatype.FLSqlQuery().execSql("UPDATE gp_usutiendaonline SET uid = {} WHERE email = '{}'".format(response_data["uid"], item["mail"]))
 
         self.after_sync_item(item["idlinea"])

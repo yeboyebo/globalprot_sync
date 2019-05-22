@@ -12,9 +12,7 @@ class GpOrderLineSerializer(AQSerializer):
             iva = 0
 
         datostalla = self.get_datostalla()
-        print("datostalla______:", datostalla)
         if datostalla:
-            print("Con talla")
             self.set_string_value("referencia", datostalla["referencia"], max_characters=18)
             self.set_string_value("barcode", datostalla["barcode"], max_characters=20)
             self.set_string_value("talla", datostalla["talla"], max_characters=5)
@@ -28,7 +26,6 @@ class GpOrderLineSerializer(AQSerializer):
         if descripcion == "" or descripcion is None:
             descripcion = self.init_data["descripcion"]
 
-        print("Descripcion:", descripcion)
         self.set_string_value("descripcion", descripcion, max_characters=100)
         self.set_string_value("codimpuesto", self.get_codimpuesto(iva), max_characters=10)
 

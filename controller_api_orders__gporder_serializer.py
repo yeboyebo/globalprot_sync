@@ -13,18 +13,19 @@ class GpOrderSerializer(AQSerializer):
         codserie = ""
         coddivisa = ""
         datoscliente = self.get_datoscliente()
-        if "codserie" not in datoscliente or codserie is None or codserie == "":
-            codserie = self.get_codserie()
-        else:
-            codserie = datoscliente["codserie"]
+        # if "codserie" not in datoscliente or codserie is None or codserie == "":
+        #     codserie = self.get_codserie()
+        # else:
+        #     codserie = datoscliente["codserie"]
         codejercicio = self.get_codejercicio()
         if codejercicio is None or codejercicio == "":
             codejercicio = "2019"
-        print("CodSerie:", codserie)
         if "coddivisa" not in datoscliente or coddivisa is None or coddivisa == "":
             coddivisa = "EUR"
         else:
             coddivisa = datoscliente["coddivisa"]
+
+        codserie = self.get_codserie()
         codalmacen = "GEN"
         self.set_string_value("codserie", codserie)
         self.set_string_value("codejercicio", codejercicio)
@@ -36,22 +37,23 @@ class GpOrderSerializer(AQSerializer):
         self.set_string_value("codalmacen", codalmacen)
         self.set_string_relation("fecha", "fecha", max_characters=10)
         self.set_string_relation("fechasalida", "fecha", max_characters=10)
-        self.set_string_value("codcentro", self.init_data["codcentro"], max_characters=15)
+
         self.set_data_value("editable", True)
         self.set_data_value("tasaconv", 1)
         self.set_data_relation("total", "total")
         self.set_data_relation("neto", "neto")
         self.set_data_relation("totaliva", "totaliva")
         self.set_data_value("totaleuros", self.init_data["total"])
+        self.set_string_value("idpedidoweb", self.init_data["idpedidoweb"], max_characters=10)
 
-        print("datoscliente______:", datoscliente)
         if datoscliente:
-            print("Con usuario")
             self.set_string_value("codcliente", datoscliente["codcliente"], max_characters=10)
             self.set_string_value("email", datoscliente["email"], max_characters=100)
-            print("nombre:", datoscliente["nombre"])
             self.set_string_value("cifnif", datoscliente["cifnif"], max_characters=20)
             self.set_string_value("nombrecliente", datoscliente["nombre"], max_characters=100)
+            idceco = qsatype.FLUtil.quickSqlSelect("gp_cecoscliente", "idceco", "codcliente = '{}' AND codcentro = '{}'".format(datoscliente["codcliente"], self.init_data["codcentro"]))
+            if idceco:
+                self.set_string_value("idceco", idceco, max_characters=10)
 
             self.set_string_value("coddir", datoscliente["coddir"], max_characters=10)
             self.set_string_value("codpostal", datoscliente["codpostal"], max_characters=10)
@@ -65,7 +67,6 @@ class GpOrderSerializer(AQSerializer):
             self.set_string_value("dirnum", datoscliente["dirnum"], max_characters=100)
             self.set_string_value("dirotros", datoscliente["dirotros"], max_characters=100)
         else:
-            print("Sin usuario")
             self.set_string_relation("email", "email", max_characters=100)
             self.set_string_relation("cifnif", "cif", max_characters=20, default="-")
 
@@ -90,18 +91,15 @@ class GpOrderSerializer(AQSerializer):
             self.data["children"]["lines"] = []
 
         for item in self.init_data["items"]:
-            print("Linea:", item)
             line_data = GpOrderLineSerializer().serialize(item)
-            print("Linea_serializer:", line_data)
             if "referencia" in line_data and line_data["referencia"] == "ERRORNOREFERENCIA":
-                print("La rf esta mal:")
                 return False
             self.data["children"]["lines"].append(line_data)
         print("get_data___FIN")
         return True
 
     def get_codserie(self):
-        codserie = "A"
+        codserie = "TW"
 
         return codserie
 

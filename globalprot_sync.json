@@ -123,6 +123,14 @@
             {
                 "name": "model_flfactalma__movistock_def.py",
                 "path": "models/flfactalma/"
+            },
+            {
+                "name": "model_flfactppal__gp_cecoscliente.py",
+                "path": "models/flfactppal/"
+            },
+            {
+                "name": "model_flfactppal__gp_cecoscliente_def.py",
+                "path": "models/flfactppal/"
             }
         ]
     },

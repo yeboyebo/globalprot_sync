@@ -25,15 +25,12 @@ class GpProductsUpload(AQSyncUpload):
         })
 
     def get_data(self):
-        print(self.params)
-        print("CodSincro: {}".format(self.params["codsincro"]))
         q = qsatype.FLSqlQuery()
         q.setSelect("ls.id, ls.idobjeto, ls.descripcion, ls.idobjeto_web, ls.node_id, ls.tiposincro,COALESCE(atr.pvp, a.pvp) AS pvp, atr.talla,s.disponible")
         q.setFrom("lineassincro_catalogo ls LEFT OUTER JOIN articulos a ON ls.idobjeto = a.referencia LEFT OUTER JOIN atributosarticulos atr ON ls.idobjeto = atr.barcode  LEFT OUTER JOIN stocks s ON (ls.idobjeto = s.referencia OR ls.idobjeto = s.barcode)")
         q.setWhere("ls.codsincro = '{}' AND ls.sincronizado = false ORDER BY ls.tiposincro DESC".format(self.params["codsincro"]))
 
         q.exec_()
-        print("**********************Consulta*******************:", q.sql())
         body = []
         if not q.size():
             return body
@@ -47,23 +44,18 @@ class GpProductsUpload(AQSyncUpload):
             node_id = q.value("ls.node_id")
             talla = q.value("atr.talla")
             amount = 0
-            print("commerce_price_amount value___________: ", q.value("pvp"))
             if q.value("pvp") and q.value("pvp") is not None:
-                print("Sin talla__pvp")
                 pvp = q.value("pvp") or 0
                 amount = int(pvp * 100)
             qty = str(self.dame_stock(q.value("s.disponible")))
             if tiposincro == "Enviar Talla" or tiposincro == "Borrar Talla":
-                print("Con talla__pvp")
                 pvp = q.value("atr.pvp") or 0
                 amount = int(pvp * 100)
-            print("amount________________-: ", amount)
             body.append({"idlinea": idlinea, "type": "product", "product_id": product_id, "node_id": node_id, "tiposincro": tiposincro, "sku": sku, "title": title, "commerce_price": {"amount": amount, "currency_code": "EUR"}, "talla": talla, "commerce_stock": qty})
 
         return body
 
     def sync(self):
-        print("in sync")
         data = self.get_data()
 
         if data == []:
@@ -75,43 +67,28 @@ class GpProductsUpload(AQSyncUpload):
             tiposincro = item["tiposincro"]
             node_id = item["node_id"]
             talla = item["talla"]
-            sku = item["sku"]
-            print("ID_product: ", product_id)
-            print("tiposincro: ", tiposincro)
-            print("sku: ", sku)
-
             tid = ""
+
             if tiposincro == "Enviar Talla":
                 tid = self.dame_talla(talla)
-                print("Llamada a dame_tala____tid:", tid)
                 if not tid:
                     tid = self.crea_talla(talla)
             if product_id and product_id is not None and product_id != "":
                 if tiposincro == "Borrar Talla" or tiposincro == "Borrar Producto":
-                    print("*************Llamada DELETE Talla / Producto *******************")
                     response_data = self.elimina_producto(item)
                 else:
-                    print("*************Llamada MODIFICAR Talla / Producto *******************")
                     response_data = self.modifica_producto(item, str(tid))
             else:
-                print("NODO______: ", node_id)
                 if node_id and node_id is not None and node_id != "":
-                    print("NODO____tiposincro__: ", tiposincro)
                     if tiposincro == "Borrar Nodo":
-                        print("Borro nodo")
                         response_data = self.elimina_nodo(item)
                     else:
-                        print("Modifico nodo")
                         response_data = self.modifica_nodo(item)
                 else:
                     if tiposincro == "Enviar Nodo":
-                        print("Creo nodo")
                         response_data = self.crea_nodo(item)
                     else:
-                        print("*************Llamada ALTA Talla / Producto *******************")
                         response_data = self.crea_producto(item, str(tid))
-
-            print("Datos de respuesta: ", response_data)
 
         return self.after_sync()
 
@@ -129,8 +106,6 @@ class GpProductsUpload(AQSyncUpload):
         response_data = self.send_request("get")
         for item in response_data:
             if item["name"] == talla:
-                print("item['name']: ", item["name"])
-                print("item['tid']: ", item["tid"])
                 return item["tid"]
         return False
 
@@ -160,10 +135,7 @@ class GpProductsUpload(AQSyncUpload):
         if talla and talla != "":
             data["field_talla"] = talla
 
-        print("---------------------------")
-        print(data)
         response_data = self.send_request("post", data=json.dumps(data), replace=[""])
-        print("response_data________: ", response_data)
         if "field_talla" in response_data and response_data["field_talla"] and response_data["field_talla"] != "":
             qsatype.FLSqlQuery().execSql("UPDATE atributosarticulos SET product_id = {} WHERE barcode = '{}'".format(response_data["product_id"], item["sku"]))
         else:
@@ -228,7 +200,6 @@ class GpProductsUpload(AQSyncUpload):
             "field_producto": {"und": products}
         }
 
-        print("crea_nodo____data: ", data)
         # {"title":"prueba","type":"producto","field_producto":{"und":["19"]}}
         # {'type': 'product', 'field_producto': {'und': ['138']}, 'title': 'prueba'}
         response_data = self.send_request("post", data=json.dumps(data), replace=[""])
@@ -282,10 +253,8 @@ class GpProductsUpload(AQSyncUpload):
             return False
 
         while q.next():
-            print("dame_products_nodo______product_id", q.value(0))
             if q.value(0) is not None:
                 adatos.append(q.value(0))
-        print("dame_products_nodo______adatos", adatos)
         return adatos
 
     def after_sync(self, response_data=None):
