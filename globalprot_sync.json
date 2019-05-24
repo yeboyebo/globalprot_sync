@@ -8,6 +8,10 @@
             {
                 "name": "model_flfactppal__empresa_def.py",
                 "path": "models/flfactppal/"
+            },
+            {
+                "path": "models/flsyncppal/",
+                "name": "model_flsyncppal__flsyncppal_def.py"
             }
         ],
         "deleteFile": [],

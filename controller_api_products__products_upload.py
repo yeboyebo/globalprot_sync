@@ -26,7 +26,7 @@ class GpProductsUpload(AQSyncUpload):
 
     def get_data(self):
         q = qsatype.FLSqlQuery()
-        q.setSelect("ls.id, ls.idobjeto, ls.descripcion, ls.idobjeto_web, ls.node_id, ls.tiposincro,COALESCE(atr.pvp, a.pvp) AS pvp, atr.talla,s.disponible")
+        q.setSelect("a.referencia, ls.id, ls.idobjeto, ls.descripcion, ls.idobjeto_web, ls.node_id, ls.tiposincro, COALESCE(atr.pvp, a.pvp) AS pvp, atr.talla,s.disponible")
         q.setFrom("lineassincro_catalogo ls LEFT OUTER JOIN articulos a ON ls.idobjeto = a.referencia LEFT OUTER JOIN atributosarticulos atr ON ls.idobjeto = atr.barcode  LEFT OUTER JOIN stocks s ON (ls.idobjeto = s.referencia OR ls.idobjeto = s.barcode)")
         q.setWhere("ls.codsincro = '{}' AND ls.sincronizado = false ORDER BY ls.tiposincro DESC".format(self.params["codsincro"]))
 
@@ -43,14 +43,20 @@ class GpProductsUpload(AQSyncUpload):
             product_id = q.value("ls.idobjeto_web")
             node_id = q.value("ls.node_id")
             talla = q.value("atr.talla")
+            pvp = q.value("pvp")
             amount = 0
-            if q.value("pvp") and q.value("pvp") is not None:
-                pvp = q.value("pvp") or 0
-                amount = int(pvp * 100)
+            referencia = q.value("a.referencia") or q.value("ls.idobjeto").split("-")[0]
+            print("referencia:", referencia)
+            print("pvp___11111:", pvp)
+            if pvp is None or pvp == 0:
+                pvp = qsatype.FLUtil.sqlSelect("articulos", "pvp", "referencia ='{}'".format(referencia))
+                print("pvp___222222:", pvp)
+            amount = int(pvp * 100)
+            print("amount_________:", amount)
             qty = str(self.dame_stock(q.value("s.disponible")))
-            if tiposincro == "Enviar Talla" or tiposincro == "Borrar Talla":
-                pvp = q.value("atr.pvp") or 0
-                amount = int(pvp * 100)
+            # if tiposincro == "Enviar Talla" or tiposincro == "Borrar Talla":
+            #     pvp = q.value("atr.pvp") or 0
+            #     amount = int(pvp * 100)
             body.append({"idlinea": idlinea, "type": "product", "product_id": product_id, "node_id": node_id, "tiposincro": tiposincro, "sku": sku, "title": title, "commerce_price": {"amount": amount, "currency_code": "EUR"}, "talla": talla, "commerce_stock": qty})
 
         return body
