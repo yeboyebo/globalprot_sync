@@ -4,6 +4,7 @@ from YBLEGACY import qsatype
 from YBLEGACY.constantes import *
 
 from controllers.api.sync.base.controllers.aqsync_upload import AQSyncUpload
+from models.flsyncppal import flsyncppal_def as syncppal
 
 
 class GpProductsUpload(AQSyncUpload):
@@ -46,13 +47,9 @@ class GpProductsUpload(AQSyncUpload):
             pvp = q.value("pvp")
             amount = 0
             referencia = q.value("a.referencia") or q.value("ls.idobjeto").split("-")[0]
-            print("referencia:", referencia)
-            print("pvp___11111:", pvp)
             if pvp is None or pvp == 0:
                 pvp = qsatype.FLUtil.sqlSelect("articulos", "pvp", "referencia ='{}'".format(referencia))
-                print("pvp___222222:", pvp)
             amount = int(pvp * 100)
-            print("amount_________:", amount)
             qty = str(self.dame_stock(q.value("s.disponible")))
             # if tiposincro == "Enviar Talla" or tiposincro == "Borrar Talla":
             #     pvp = q.value("atr.pvp") or 0
@@ -81,22 +78,35 @@ class GpProductsUpload(AQSyncUpload):
                     tid = self.crea_talla(talla)
             if product_id and product_id is not None and product_id != "":
                 if tiposincro == "Borrar Talla" or tiposincro == "Borrar Producto":
-                    response_data = self.elimina_producto(item)
+                    self.elimina_producto(item)
                 else:
-                    response_data = self.modifica_producto(item, str(tid))
+                    self.modifica_producto(item, str(tid))
             else:
                 if node_id and node_id is not None and node_id != "":
                     if tiposincro == "Borrar Nodo":
-                        response_data = self.elimina_nodo(item)
+                        self.elimina_nodo(item)
                     else:
-                        response_data = self.modifica_nodo(item)
+                        self.modifica_nodo(item)
                 else:
                     if tiposincro == "Enviar Nodo":
-                        response_data = self.crea_nodo(item)
+                        self.crea_nodo(item)
                     else:
-                        response_data = self.crea_producto(item, str(tid))
+                        self.crea_producto(item, str(tid))
 
         return self.after_sync()
+
+    def log(self, msg_type, msg):
+        if self.driver.in_production:
+            qsatype.debug("{} {}. {}.".format(msg_type, self.process_name, str(msg).replace("'", "\"")).encode("ascii"))
+        else:
+            qsatype.debug("{} {}. {}.".format(msg_type, self.process_name, str(msg).replace("'", "\"")))
+
+        self.logs.append({
+            "msg_type": msg_type,
+            "msg": msg,
+            "process_name": self.process_name,
+            "customer_name": syncppal.iface.get_customer()
+        })
 
     def dame_stock(self, disponible):
         if not disponible or isNaN(disponible) or disponible < 0:

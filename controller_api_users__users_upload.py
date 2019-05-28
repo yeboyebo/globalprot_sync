@@ -1,9 +1,9 @@
 import json
 
 from YBLEGACY import qsatype
-from YBLEGACY.constantes import *
 
 from controllers.api.sync.base.controllers.aqsync_upload import AQSyncUpload
+from models.flsyncppal import flsyncppal_def as syncppal
 
 
 class GpUsersUpload(AQSyncUpload):
@@ -56,13 +56,26 @@ class GpUsersUpload(AQSyncUpload):
             tiposincro = item["tiposincro"]
             if user_id and user_id is not None and user_id != "":
                 if tiposincro == "Borrar Usuario":
-                    response_data = self.elimina_usuario(item)
+                    self.elimina_usuario(item)
                 else:
-                    response_data = self.modifica_usuario(item)
+                    self.modifica_usuario(item)
             else:
-                    response_data = self.crea_usuario(item)
+                    self.crea_usuario(item)
 
         return self.after_sync()
+
+    def log(self, msg_type, msg):
+        if self.driver.in_production:
+            qsatype.debug("{} {}. {}.".format(msg_type, self.process_name, str(msg).replace("'", "\"")).encode("ascii"))
+        else:
+            qsatype.debug("{} {}. {}.".format(msg_type, self.process_name, str(msg).replace("'", "\"")))
+
+        self.logs.append({
+            "msg_type": msg_type,
+            "msg": msg,
+            "process_name": self.process_name,
+            "customer_name": syncppal.iface.get_customer()
+        })
 
     def crea_usuario(self, item):
         self.set_sync_params({

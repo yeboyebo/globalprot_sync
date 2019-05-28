@@ -3,6 +3,7 @@ from controllers.api.sync.orders.serializers.gporder_serializer import GpOrderSe
 from YBLEGACY import qsatype
 
 from models.flfacturac.objects.gporder_raw import GpOrder
+from models.flsyncppal import flsyncppal_def as syncppal
 
 
 class GpOrdersDownload(AQSyncDownload):
@@ -39,3 +40,16 @@ class GpOrdersDownload(AQSyncDownload):
 
     def process_data(self, data):
         return True
+
+    def log(self, msg_type, msg):
+        if self.driver.in_production:
+            qsatype.debug("{} {}. {}.".format(msg_type, self.process_name, str(msg).replace("'", "\"")).encode("ascii"))
+        else:
+            qsatype.debug("{} {}. {}.".format(msg_type, self.process_name, str(msg).replace("'", "\"")))
+
+        self.logs.append({
+            "msg_type": msg_type,
+            "msg": msg,
+            "process_name": self.process_name,
+            "customer_name": syncppal.iface.get_customer()
+        })
