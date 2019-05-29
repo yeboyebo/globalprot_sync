@@ -98,7 +98,6 @@ class GpOrderSerializer(AQSerializer):
             if "referencia" in line_data and line_data["referencia"] == "ERRORNOREFERENCIA":
                 return False
             self.data["children"]["lines"].append(line_data)
-        print("get_data___FIN")
         return True
 
     def get_codserie(self):
@@ -132,7 +131,7 @@ class GpOrderSerializer(AQSerializer):
         q = qsatype.FLSqlQuery()
         # q.setSelect("c.codcliente, c.cifnif, c.codserie,c.coddivisa, c.nombre, c.telefono1, c.email, dc.id, dc.dirtipovia, dc.dirnum, dc.direccion, dc.codpostal, dc.ciudad, dc.provincia, dc.codpais, dc.dirotros")
         q.setSelect("c.codcliente, c.cifnif, dc.id")
-        q.setFrom("clientes c INNER JOIN dirclientes dc ON c.codcliente = dc.codcliente INNER JOIN gp_usutiendaonline us ON c.codcliente = us.codcliente")
+        q.setFrom("clientes c INNER JOIN gp_usutiendaonline us ON c.codcliente = us.codcliente LEFT OUTER JOIN dirclientes dc ON c.codcliente = dc.codcliente")
         # q.setWhere("us.uid = '{}' AND dc.domenvio".format(usuario))
         q.setWhere("us.uid = '{}'".format(usuario))
         if not q.exec_():

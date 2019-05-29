@@ -64,19 +64,6 @@ class GpUsersUpload(AQSyncUpload):
 
         return self.after_sync()
 
-    def log(self, msg_type, msg):
-        if self.driver.in_production:
-            qsatype.debug("{} {}. {}.".format(msg_type, self.process_name, str(msg).replace("'", "\"")).encode("ascii"))
-        else:
-            qsatype.debug("{} {}. {}.".format(msg_type, self.process_name, str(msg).replace("'", "\"")))
-
-        self.logs.append({
-            "msg_type": msg_type,
-            "msg": msg,
-            "process_name": self.process_name,
-            "customer_name": syncppal.iface.get_customer()
-        })
-
     def crea_usuario(self, item):
         self.set_sync_params({
             "url": "http://dev9.yeclaweb.com/erpglobal/user{}",

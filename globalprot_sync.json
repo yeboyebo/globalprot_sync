@@ -12,6 +12,10 @@
             {
                 "path": "models/flsyncppal/",
                 "name": "model_flsyncppal__flsyncppal_def.py"
+            },
+            {
+                "path": "controllers/api/sync/base/drivers/",
+                "name": "controller_api_base__default_driver.py"
             }
         ],
         "deleteFile": [],

@@ -49,6 +49,8 @@ class GpProductsUpload(AQSyncUpload):
             referencia = q.value("a.referencia") or q.value("ls.idobjeto").split("-")[0]
             if pvp is None or pvp == 0:
                 pvp = qsatype.FLUtil.sqlSelect("articulos", "pvp", "referencia ='{}'".format(referencia))
+            if pvp is None:
+                pvp = 0
             amount = int(pvp * 100)
             qty = str(self.dame_stock(q.value("s.disponible")))
             # if tiposincro == "Enviar Talla" or tiposincro == "Borrar Talla":
@@ -94,19 +96,6 @@ class GpProductsUpload(AQSyncUpload):
                         self.crea_producto(item, str(tid))
 
         return self.after_sync()
-
-    def log(self, msg_type, msg):
-        if self.driver.in_production:
-            qsatype.debug("{} {}. {}.".format(msg_type, self.process_name, str(msg).replace("'", "\"")).encode("ascii"))
-        else:
-            qsatype.debug("{} {}. {}.".format(msg_type, self.process_name, str(msg).replace("'", "\"")))
-
-        self.logs.append({
-            "msg_type": msg_type,
-            "msg": msg,
-            "process_name": self.process_name,
-            "customer_name": syncppal.iface.get_customer()
-        })
 
     def dame_stock(self, disponible):
         if not disponible or isNaN(disponible) or disponible < 0:

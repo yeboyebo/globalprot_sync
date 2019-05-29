@@ -21,7 +21,7 @@ class globalprot_sync_download(interna_download):
         response = task_manager.task_executer("orders_download", data)
         result = response["data"]
         status = response["status"]
-
+        # éxito
         return HttpResponse(json.dumps(result), status=status, content_type="application/json")
 
 

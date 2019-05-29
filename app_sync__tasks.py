@@ -15,8 +15,7 @@ sync_object_dict = {
         "driver": DrupalDriver
     },
     "orders_download": {
-        "sync_object": GpOrdersDownload,
-        "driver": DrupalDriver
+        "sync_object": GpOrdersDownload
     }
 }
 

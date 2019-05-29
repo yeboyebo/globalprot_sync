@@ -21,7 +21,7 @@ class globalprot_sync_upload(interna_upload):
         response = task_manager.task_executer("users_upload", data)
         result = response["data"]
         status = response["status"]
-
+        # éxito
         return HttpResponse(json.dumps(result), status=status, content_type="application/json")
 
 
