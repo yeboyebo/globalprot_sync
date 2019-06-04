@@ -27,10 +27,17 @@ class GpProductsUpload(AQSyncUpload):
 
     def get_data(self):
         q = qsatype.FLSqlQuery()
-        q.setSelect("a.referencia, ls.id, ls.idobjeto, ls.descripcion, ls.idobjeto_web, ls.node_id, ls.tiposincro, COALESCE(atr.pvp, a.pvp) AS pvp, atr.talla,s.disponible")
-        q.setFrom("lineassincro_catalogo ls LEFT OUTER JOIN articulos a ON ls.idobjeto = a.referencia LEFT OUTER JOIN atributosarticulos atr ON ls.idobjeto = atr.barcode  LEFT OUTER JOIN stocks s ON (ls.idobjeto = s.referencia OR ls.idobjeto = s.barcode)")
-        q.setWhere("ls.codsincro = '{}' AND ls.sincronizado = false ORDER BY ls.tiposincro DESC".format(self.params["codsincro"]))
-
+        q.setSelect("a.referencia, ls.id, ls.idobjeto, ls.descripcion, ls.idobjeto_web, ls.node_id, ls.tiposincro, COALESCE(atr.pvp, a.pvp) AS pvp, atr.talla")
+        q.setFrom("sincro_catalogo sc INNER JOIN lineassincro_catalogo ls ON sc.codsincro = ls.codsincro LEFT OUTER JOIN articulos a ON ls.idobjeto = a.referencia LEFT OUTER JOIN atributosarticulos atr ON ls.idobjeto = atr.barcode")
+        where = "(sc.tiposincro = 'Enviar productos' OR sc.tiposincro = 'Borrar productos')"
+        if where != "":
+            where += " AND "
+        if "codsincro" in self.params and self.params["codsincro"]:
+            where += "sc.ptesincro AND ls.sincronizado = false AND ls.codsincro = '{}'  ORDER BY ls.id LIMIT 10".format(self.params["codsincro"])
+        else:
+            where += "sc.ptesincro AND ls.sincronizado = false ORDER BY ls.id LIMIT 10"
+        q.setWhere(where)
+        print("Consulta__body: ", q.sql())
         q.exec_()
         body = []
         if not q.size():
@@ -52,7 +59,7 @@ class GpProductsUpload(AQSyncUpload):
             if pvp is None:
                 pvp = 0
             amount = int(pvp * 100)
-            qty = str(self.dame_stock(q.value("s.disponible")))
+            qty = str(self.dame_stock(q.value("a.referencia"), q.value("ls.idobjeto")))
             # if tiposincro == "Enviar Talla" or tiposincro == "Borrar Talla":
             #     pvp = q.value("atr.pvp") or 0
             #     amount = int(pvp * 100)
@@ -68,6 +75,7 @@ class GpProductsUpload(AQSyncUpload):
             return self.large_sleep
 
         for item in data:
+            # idlinea = item["idlinea"]
             product_id = item["product_id"]
             tiposincro = item["tiposincro"]
             node_id = item["node_id"]
@@ -95,9 +103,15 @@ class GpProductsUpload(AQSyncUpload):
                     else:
                         self.crea_producto(item, str(tid))
 
-        return self.after_sync()
+        return self.small_sleep
 
-    def dame_stock(self, disponible):
+    def dame_stock(self, referencia, barcode):
+        where = "referencia = '{}'".format(referencia)
+        if referencia != barcode:
+            where = "referencia = '{}' AND barcode = '{}'".format(barcode.split("-")[0], barcode)
+        print("where____disponible:", where)
+        disponible = qsatype.FLUtil.quickSqlSelect("stocks", "disponible", where)
+        print("Disponible-____:", disponible)
         if not disponible or isNaN(disponible) or disponible < 0:
             return 0.00
 
@@ -262,11 +276,18 @@ class GpProductsUpload(AQSyncUpload):
                 adatos.append(q.value(0))
         return adatos
 
-    def after_sync(self, response_data=None):
-        qsatype.FLSqlQuery().execSql("UPDATE sincro_catalogo SET ptesincro = false, fecha = '{}', hora = '{}' WHERE codsincro =  '{}'".format(self.start_date, self.start_time, self.params["codsincro"]))
-        self.log("Éxito", "Productos sincronizados correctamente (codsincro: {})".format(self.params["codsincro"]))
+    def after_sync(self, codsincro=None):
+        qsatype.FLSqlQuery().execSql("UPDATE sincro_catalogo SET ptesincro = false, fecha = '{}', hora = '{}' WHERE codsincro =  '{}'".format(self.start_date, self.start_time, codsincro))
+        self.log("Éxito", "Productos sincronizados correctamente.")
 
-        return self.small_sleep
+        return True
 
     def after_sync_item(self, idlinea):
         qsatype.FLSqlQuery().execSql("UPDATE lineassincro_catalogo SET sincronizado = true WHERE id =  {}".format(idlinea))
+        codsincro = qsatype.FLUtil.quickSqlSelect("lineassincro_catalogo", "codsincro", "id = '{}'".format(idlinea))
+        print("CodSincro_____:", codsincro)
+        idlinea = qsatype.FLUtil.quickSqlSelect("lineassincro_catalogo", "id", "sincronizado = false AND  codsincro = '{}'".format(codsincro))
+        print("idlinea______:", idlinea)
+        if idlinea is False or idlinea is None:
+            self.after_sync(codsincro)
+        return True

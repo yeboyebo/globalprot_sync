@@ -28,7 +28,14 @@ class GpUsersUpload(AQSyncUpload):
         q = qsatype.FLSqlQuery()
         q.setSelect("id, idobjeto, descripcion, idobjeto_web, tiposincro")
         q.setFrom("lineassincro_catalogo")
-        q.setWhere("codsincro = '{}' AND sincronizado = false".format(self.params["codsincro"]))
+        where = "(tiposincro = 'Enviar Usuario' OR tiposincro = 'Borrar Usuario')"
+        if where != "":
+            where += " AND "
+        if "codsincro" in self.params and self.params["codsincro"]:
+            where += "codsincro = '{}' AND sincronizado = false".format(self.params["codsincro"])
+        else:
+            where += "sincronizado = false ORDER BY id LIMIT 10"
+        q.setWhere(where)
         q.exec_()
         body = []
         if not q.size():
@@ -62,7 +69,7 @@ class GpUsersUpload(AQSyncUpload):
             else:
                     self.crea_usuario(item)
 
-        return self.after_sync()
+        return self.small_sleep
 
     def crea_usuario(self, item):
         self.set_sync_params({
@@ -119,11 +126,16 @@ class GpUsersUpload(AQSyncUpload):
 
         return True
 
-    def after_sync(self, response_data=None):
-        qsatype.FLSqlQuery().execSql("UPDATE sincro_catalogo SET ptesincro = false, fecha = '{}', hora = '{}' WHERE codsincro =  '{}'".format(self.start_date, self.start_time, self.params["codsincro"]))
-        self.log("Éxito", "Usuario sincronizado correctamente (codsincro: {})".format(self.params["codsincro"]))
+    def after_sync(self, codsincro=None):
+        qsatype.FLSqlQuery().execSql("UPDATE sincro_catalogo SET ptesincro = false, fecha = '{}', hora = '{}' WHERE codsincro =  '{}'".format(self.start_date, self.start_time, codsincro))
+        self.log("Éxito", "Usuario sincronizado correctamente.")
 
-        return self.small_sleep
+        return True
 
     def after_sync_item(self, idlinea):
         qsatype.FLSqlQuery().execSql("UPDATE lineassincro_catalogo SET sincronizado = true WHERE id =  {}".format(idlinea))
+        codsincro = qsatype.FLUtil.quickSqlSelect("lineassincro_catalogo", "codsincro", "id = '{}'".format(idlinea))
+        idlinea = qsatype.FLUtil.quickSqlSelect("lineassincro_catalogo", "id", "sincronizado = false AND  codsincro = '{}'".format(codsincro))
+        if idlinea is False or idlinea is None:
+            self.after_sync(codsincro)
+        return True
