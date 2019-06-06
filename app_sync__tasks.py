@@ -1,8 +1,9 @@
-from controllers.api.sync.base.controllers.task_manager import TaskManager
+from controllers.base.default.managers.task_manager import TaskManager
+from controllers.base.drupal.drivers.drupal import DrupalDriver
+
 from controllers.api.sync.products.controllers.products_upload import GpProductsUpload
 from controllers.api.sync.users.controllers.users_upload import GpUsersUpload
 from controllers.api.sync.orders.controllers.gporders_download import GpOrdersDownload
-from controllers.api.sync.base.drivers.drupal_driver import DrupalDriver
 
 
 sync_object_dict = {
