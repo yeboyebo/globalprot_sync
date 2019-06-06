@@ -109,10 +109,6 @@
                 "path": "controllers/api/sync/orders/controllers/"
             },
             {
-                "name": "ctrl_api_sync_products__info.py",
-                "path": "controllers/api/sync/products/"
-            },
-            {
                 "name": "model_flfacturac__gporder_line_raw.py",
                 "path": "models/flfacturac/objects/"
             },

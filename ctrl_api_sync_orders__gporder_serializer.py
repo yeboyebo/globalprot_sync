@@ -1,12 +1,12 @@
 from YBLEGACY import qsatype
 from YBLEGACY.constantes import *
 
-from controllers.api.sync.base.serializers.aqserializer import AQSerializer
+from controllers.base.default.serializers.default_serializer import DefaultSerializer
 
 from controllers.api.sync.orders.serializers.gporder_line_serializer import GpOrderLineSerializer
 
 
-class GpOrderSerializer(AQSerializer):
+class GpOrderSerializer(DefaultSerializer):
 
     def get_data(self):
 

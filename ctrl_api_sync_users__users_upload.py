@@ -2,11 +2,11 @@ import json
 
 from YBLEGACY import qsatype
 
-from controllers.api.sync.base.controllers.aqsync_upload import AQSyncUpload
+from controllers.base.default.controllers.upload_sync import UploadSync
 from models.flsyncppal import flsyncppal_def as syncppal
 
 
-class GpUsersUpload(AQSyncUpload):
+class GpUsersUpload(UploadSync):
 
     def __init__(self, driver, params=None):
         super().__init__("gpsyncusers", driver, params)

@@ -1,10 +1,10 @@
 from YBLEGACY import qsatype
 from YBLEGACY.constantes import *
 
-from controllers.api.sync.base.serializers.aqserializer import AQSerializer
+from controllers.base.default.serializers.default_serializer import DefaultSerializer
 
 
-class GpOrderLineSerializer(AQSerializer):
+class GpOrderLineSerializer(DefaultSerializer):
 
     def get_data(self):
         iva = self.init_data["iva"]

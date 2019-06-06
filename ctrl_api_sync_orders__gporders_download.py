@@ -1,11 +1,11 @@
-from controllers.api.sync.base.controllers.aqsync_recieve import AQSyncRecieve
+from controllers.base.default.controllers.recieve_sync import RecieveSync
 from controllers.api.sync.orders.serializers.gporder_serializer import GpOrderSerializer
 from YBLEGACY import qsatype
 
 from models.flfacturac.objects.gporder_raw import GpOrder
 
 
-class GpOrdersDownload(AQSyncRecieve):
+class GpOrdersDownload(RecieveSync):
 
     def __init__(self, params=None):
         super().__init__("gpsyncorders", params)
