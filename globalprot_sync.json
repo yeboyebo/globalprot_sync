@@ -12,10 +12,6 @@
             {
                 "path": "models/flsyncppal/",
                 "name": "model_flsyncppal__flsyncppal_def.py"
-            },
-            {
-                "path": "controllers/api/sync/base/drivers/",
-                "name": "controller_api_base__default_driver.py"
             }
         ],
         "deleteFile": [],
@@ -45,24 +41,24 @@
                 "path": "apps/sync/"
             },
             {
-                "name": "controller_api_products__upload.py",
+                "name": "ctrl_api_sync_products__upload.py",
                 "path": "controllers/api/sync/products/"
             },
             {
-                "name": "controller_api_products__products_upload.py",
+                "name": "ctrl_api_sync_products__products_upload.py",
                 "path": "controllers/api/sync/products/controllers/"
             },
             {
                 "path": "controllers/api/",
-                "name": "controller_api____init__.py"
+                "name": "ctrl_api____init__.py"
             },
             {
                 "path": "controllers/api/sync/users/",
-                "name": "controller_api_users__upload.py"
+                "name": "ctrl_api_sync_users__upload.py"
             },
             {
                 "path": "controllers/api/sync/users/controllers/",
-                "name": "controller_api_users__users_upload.py"
+                "name": "ctrl_api_sync_users__users_upload.py"
             },
             {
                 "name": "model_flfactppal__gp_usutiendaonline.py",
@@ -97,23 +93,23 @@
                 "name": "model_flfactalma__lineassincro_catalogo_def.py"
             },
             {
-                "name": "controller_api_orders__download.py",
+                "name": "ctrl_api_sync_orders__download.py",
                 "path": "controllers/api/sync/orders/"
             },
             {
-                "name": "controller_api_orders__gporder_serializer.py",
+                "name": "ctrl_api_sync_orders__gporder_serializer.py",
                 "path": "controllers/api/sync/orders/serializers/"
             },
             {
-                "name": "controller_api_orders__gporder_line_serializer.py",
+                "name": "ctrl_api_sync_orders__gporder_line_serializer.py",
                 "path": "controllers/api/sync/orders/serializers/"
             },
             {
-                "name": "controller_api_orders__gporders_download.py",
+                "name": "ctrl_api_sync_orders__gporders_download.py",
                 "path": "controllers/api/sync/orders/controllers/"
             },
             {
-                "name": "controller_api_products__info.py",
+                "name": "ctrl_api_sync_products__info.py",
                 "path": "controllers/api/sync/products/"
             },
             {
