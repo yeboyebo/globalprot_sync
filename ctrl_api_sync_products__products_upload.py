@@ -4,7 +4,6 @@ from YBLEGACY import qsatype
 from YBLEGACY.constantes import *
 
 from controllers.base.default.controllers.upload_sync import UploadSync
-from models.flsyncppal import flsyncppal_def as syncppal
 
 
 class GpProductsUpload(UploadSync):
@@ -12,18 +11,20 @@ class GpProductsUpload(UploadSync):
     def __init__(self, driver, params=None):
         super().__init__("gpsyncproducts", driver, params)
 
+        login_params = self.get_param_sincro('login')
+        logout_params = self.get_param_sincro('logout')
+
         self.set_sync_params({
-            "login_user": "global",
-            "test_login_user": "global",
-            "login_password": "123456789",
-            "test_login_password": "123456789",
-            "auth": "Basic Z2xvYmFscHJvdGVjY2lvbjoxMjM0NTY3ODk=",
-            "test_auth": "Basic Z2xvYmFscHJvdGVjY2lvbjoxMjM0NTY3ODk=",
-            "login_url": "http://dev9.yeclaweb.com/erpglobal/user/login",
-            "test_login_url": "http://dev9.yeclaweb.com/erpglobal/user/login",
-            "logout_url": "http://dev9.yeclaweb.com/erpglobal/user/logout",
-            "test_logout_url": "http://dev9.yeclaweb.com/erpglobal/user/logout"
+            "login_user": login_params['user'],
+            "test_login_user": login_params['test_user'],
+            "login_password": login_params['password'],
+            "test_login_password": login_params['test_password'],
+            "login_url": login_params['url'],
+            "test_login_url": login_params['test_url'],
+            "logout_url": logout_params['url'],
+            "test_logout_url": logout_params['test_url']
         })
+        self.set_sync_params(self.get_param_sincro('b2c'))
 
     def get_data(self):
         q = qsatype.FLSqlQuery()
@@ -118,10 +119,7 @@ class GpProductsUpload(UploadSync):
         return disponible
 
     def dame_talla(self, talla):
-        self.set_sync_params({
-            "url": "http://dev9.yeclaweb.com/erpglobal/taxonomy_term?parameters[vid]=4",
-            "test_url": "http://dev9.yeclaweb.com/erpglobal/taxonomy_term?parameters[vid]=4"
-        })
+        self.set_sync_params(self.get_param_sincro('tallaGet'))
         response_data = self.send_request("get")
         for item in response_data:
             if item["name"] == talla:
@@ -129,20 +127,14 @@ class GpProductsUpload(UploadSync):
         return False
 
     def crea_talla(self, talla):
-        self.set_sync_params({
-            "url": "http://dev9.yeclaweb.com/erpglobal/taxonomy_term",
-            "test_url": "http://dev9.yeclaweb.com/erpglobal/taxonomy_term"
-        })
+        self.set_sync_params(self.get_param_sincro('tallaCreate'))
         data = {"vid": "4", "name": talla}
         self.send_request("post", data=json.dumps(data))
 
         return self.dame_talla(talla)
 
     def crea_producto(self, item, talla=None):
-        self.set_sync_params({
-            "url": "http://dev9.yeclaweb.com/erpglobal/product{}",
-            "test_url": "http://dev9.yeclaweb.com/erpglobal/product{}"
-        })
+        self.set_sync_params(self.get_param_sincro('productUpload'))
         data = {
             "type": "product",
             "sku": item["sku"],
@@ -165,10 +157,7 @@ class GpProductsUpload(UploadSync):
         return True
 
     def modifica_producto(self, item, talla=None):
-        self.set_sync_params({
-            "url": "http://dev9.yeclaweb.com/erpglobal/product{}",
-            "test_url": "http://dev9.yeclaweb.com/erpglobal/product{}"
-        })
+        self.set_sync_params(self.get_param_sincro('productUpload'))
 
         product_id = item["product_id"]
 
@@ -189,10 +178,7 @@ class GpProductsUpload(UploadSync):
         return True
 
     def elimina_producto(self, item):
-        self.set_sync_params({
-            "url": "http://dev9.yeclaweb.com/erpglobal/product{}",
-            "test_url": "http://dev9.yeclaweb.com/erpglobal/product{}"
-        })
+        self.set_sync_params(self.get_param_sincro('productUpload'))
 
         product_id = item["product_id"]
 
@@ -208,10 +194,8 @@ class GpProductsUpload(UploadSync):
         return True
 
     def crea_nodo(self, item):
-        self.set_sync_params({
-            "url": "http://dev9.yeclaweb.com/erpglobal/node{}",
-            "test_url": "http://dev9.yeclaweb.com/erpglobal/node{}"
-        })
+        self.set_sync_params(self.get_param_sincro('nodeUpload'))
+
         products = self.dame_products_nodo(item["sku"])
         data = {
             "title": "prueba",
@@ -228,10 +212,8 @@ class GpProductsUpload(UploadSync):
         return True
 
     def modifica_nodo(self, item):
-        self.set_sync_params({
-            "url": "http://dev9.yeclaweb.com/erpglobal/node{}",
-            "test_url": "http://dev9.yeclaweb.com/erpglobal/node{}"
-        })
+        self.set_sync_params(self.get_param_sincro('nodeUpload'))
+
         node_id = item["node_id"]
         products = self.dame_products_nodo(item["sku"])
 
@@ -247,10 +229,7 @@ class GpProductsUpload(UploadSync):
         return True
 
     def elimina_nodo(self, item):
-        self.set_sync_params({
-            "url": "http://dev9.yeclaweb.com/erpglobal/node{}",
-            "test_url": "http://dev9.yeclaweb.com/erpglobal/node{}"
-        })
+        self.set_sync_params(self.get_param_sincro('nodeUpload'))
 
         node_id = item["node_id"]
 

@@ -3,7 +3,6 @@ import json
 from YBLEGACY import qsatype
 
 from controllers.base.default.controllers.upload_sync import UploadSync
-from models.flsyncppal import flsyncppal_def as syncppal
 
 
 class GpUsersUpload(UploadSync):
@@ -11,18 +10,20 @@ class GpUsersUpload(UploadSync):
     def __init__(self, driver, params=None):
         super().__init__("gpsyncusers", driver, params)
 
+        login_params = self.get_param_sincro('login')
+        logout_params = self.get_param_sincro('logout')
+
         self.set_sync_params({
-            "login_user": "global",
-            "test_login_user": "global",
-            "login_password": "123456789",
-            "test_login_password": "123456789",
-            "auth": "Basic Z2xvYmFscHJvdGVjY2lvbjoxMjM0NTY3ODk=",
-            "test_auth": "Basic Z2xvYmFscHJvdGVjY2lvbjoxMjM0NTY3ODk=",
-            "login_url": "http://dev9.yeclaweb.com/erpglobal/user/login",
-            "test_login_url": "http://dev9.yeclaweb.com/erpglobal/user/login",
-            "logout_url": "http://dev9.yeclaweb.com/erpglobal/user/logout",
-            "test_logout_url": "http://dev9.yeclaweb.com/erpglobal/user/logout"
+            "login_user": login_params['user'],
+            "test_login_user": login_params['test_user'],
+            "login_password": login_params['password'],
+            "test_login_password": login_params['test_password'],
+            "login_url": login_params['url'],
+            "test_login_url": login_params['test_url'],
+            "logout_url": logout_params['url'],
+            "test_logout_url": logout_params['test_url']
         })
+        self.set_sync_params(self.get_param_sincro('b2c'))
 
     def get_data(self):
         q = qsatype.FLSqlQuery()
@@ -72,10 +73,7 @@ class GpUsersUpload(UploadSync):
         return self.small_sleep
 
     def crea_usuario(self, item):
-        self.set_sync_params({
-            "url": "http://dev9.yeclaweb.com/erpglobal/user{}",
-            "test_url": "http://dev9.yeclaweb.com/erpglobal/user{}"
-        })
+        self.set_sync_params(self.get_param_sincro('userUpload'))
         # Alta
         # {"mail":"hola@yeclaweb.com", "status":"1", "roles":["4"], "pass": "123456789"}
         data = {
@@ -93,10 +91,7 @@ class GpUsersUpload(UploadSync):
         return True
 
     def modifica_usuario(self, item):
-        self.set_sync_params({
-            "url": "http://dev9.yeclaweb.com/erpglobal/user{}",
-            "test_url": "http://dev9.yeclaweb.com/erpglobal/user{}"
-        })
+        self.set_sync_params(self.get_param_sincro('userUpload'))
         # Modificación
         # {"mail":"hola22@yeclaweb.com","pass":"123456789", "name": "nuevonombre"}
         data = {
@@ -111,10 +106,7 @@ class GpUsersUpload(UploadSync):
         return True
 
     def elimina_usuario(self, item):
-        self.set_sync_params({
-            "url": "http://dev9.yeclaweb.com/erpglobal/user{}",
-            "test_url": "http://dev9.yeclaweb.com/erpglobal/user{}"
-        })
+        self.set_sync_params(self.get_param_sincro('userUpload'))
 
         user_id = item["uid"]
 
